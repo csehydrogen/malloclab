@@ -3,8 +3,8 @@
  *
  * In this package, a block is allocated with 8 byte header. Free
  * blocks are maintained by Red-black tree, which allows logarithmic
- * time complexity of malloc and free. If a request size is larger
- * than any free blocks, it simple increases the brk pointer.
+ * time complexity of best-fit malloc and free. If a request size is larger
+ * than any free blocks, it simply increases the brk pointer.
  * When a block is freed, immediate coalescing occurs. Realloc is
  * not implemented here.
  *
@@ -12,6 +12,9 @@
  * - http://web.mit.edu/~emin/www.old/source_code/red_black_tree/red_black_tree.c
  * - http://en.wikipedia.org/wiki/Red%E2%80%93black_tree
  * Red-black tree uses block size as key.
+ *
+ * Setting DEBUG flag will print core function calls and full RBtree contents.
+ * Setting CHECK flag will check heap consistency each time malloc and free are called.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -535,7 +538,7 @@ int mm_check(void)
 /*
  * mm_malloc - Allocate a block
  *
- * If there exists a free block where the request fits, segment it and allocate.
+ * If there exists a free block where the request fits, get the smallest one, segment it and allocate.
  * If there is no such block, increase brk.
  */
 void* mm_malloc(size_t size)
@@ -676,6 +679,7 @@ void mm_exit(void)
     cur = mem_heap_lo() + MIN_BLOCK_SIZE;
     end = mem_heap_hi() - 3;
     while(cur < end){
+        /* check if there are allocated blocks remaining */
         if(!CUR_FREE(cur)){
             printf("memory leak at %p is detected.\n", cur);
             mm_free(cur + HEADER_SIZE);

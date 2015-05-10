@@ -28,6 +28,7 @@
 #define DEFAULT_TRACEFILES "double-free.rep"
 #else
 #define DEFAULT_TRACEFILES \
+  "memory-leak.rep",\
   "short1-bal.rep",\
   "short2-bal.rep",\
   "random-bal.rep",\
